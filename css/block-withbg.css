@@ -7,7 +7,7 @@
     overflow: hidden;
     display: block;
     z-index: 1;
-    background-image: url("/Users/紫薯/Documents/Projects/website/z1shu.github.io/img/tiangongnorth.png");
+    background-image: url("https://itsz1shu.github.io/img/tiangongnorth.png");
     background-size: cover;
     border-top: 2px dotted rgb(108, 108, 108);
 }
