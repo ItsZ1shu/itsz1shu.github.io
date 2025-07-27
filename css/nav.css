@@ -1,0 +1,60 @@
+nav {
+    z-index: 100;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.783);
+    top: 0;
+    width: 100%;
+    left: 0;
+    height: fit-content;
+    border-bottom: 3px dotted rgba(130, 130, 130, 0.355);
+}
+img {
+    height: 60px;
+    margin-top: 5px;
+    vertical-align: middle;
+    margin-bottom: 5px;
+}
+a {
+    font-family: "Microsoft YaHei";
+    font-size: 20px;
+    font-weight: bold;
+    color: darkcyan;
+    vertical-align: middle;
+    margin-left: 55px;
+    text-decoration: none;
+    
+}
+
+.link {
+    border: 2px solid white;
+    border-radius: 60px;
+    background-color: white;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 13px;
+    padding-right: 13px;
+}
+
+.link:hover {
+    border: 2px solid white;
+    border-radius: 60px;
+    background-color: rgba(180, 180, 180, 0);
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 13px;
+    padding-right: 13px;
+}
+
+a:hover {
+    font-family: "Microsoft YaHei";
+    font-size: 20px;
+    font-weight: bold;
+    color: lightblue;
+    
+}
+
+a:visited {
+    font-family: "Microsoft YaHei";
+    font-size: 25px;
+    font-weight: 100px;
+}

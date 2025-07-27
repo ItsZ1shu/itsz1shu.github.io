@@ -1,0 +1,63 @@
+.component-container{
+    justify-content: space-around;
+    display: flex;
+    margin-left: 15%;
+    margin-right: 15%;
+    margin-top: 5%;
+}
+.component{
+
+    border-radius: 30px;
+    border: 5px lightblue solid;
+    text-align: center;
+    align-items: center;
+    justify-content: space-around;
+    width:300px;
+    padding-bottom: 20px;
+}
+
+.component-img img{
+    border-radius: 500px;
+    width: 190px;
+    height: 190px;
+    margin: 20px;
+}
+
+.component-title{
+    font-size: 30px;
+    font-family: "Microsoft YaHei";
+    letter-spacing: 5px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.component-link{
+    font-size: 15px;
+    padding-top: 20px;
+    margin-left: 0;
+    padding: 5px;
+    font-family: "STSong";
+    letter-spacing: 5px;
+    font-weight: lighter;
+    line-height: 24px;
+    border-radius: 5px;
+    border: 2px solid black;
+    color: black;
+    justify-content:center;
+}
+
+.component-link:hover{
+    font-size: 15px;
+    padding-top: 20px;
+    margin-left: 0;
+    padding: 5px;
+    font-family: "STSong";
+    letter-spacing: 5px;
+    font-weight: lighter;
+    line-height: 24px;
+    border-radius: 5px;
+    border: 2px solid black;
+    color: black;
+    justify-content:center;
+    background-color: rgba(0, 139, 139, 0.293);
+}

@@ -1,0 +1,105 @@
+.block-withbg {
+    position: relative;
+    height: 700px;
+    background-blend-mode: multiply;
+    background-color: rgba(0, 0, 0, 0.342);
+    /*进行视频裁剪*/
+    overflow: hidden;
+    display: block;
+    z-index: 1;
+    background-image: url("/Users/紫薯/Documents/Projects/website/z1shu.github.io/img/tiangongnorth.png");
+    background-size: cover;
+    border-top: 2px dotted rgb(108, 108, 108);
+}
+
+.title-left{
+    font-size: 50px;
+    font-family: "Microsoft YaHei";
+    letter-spacing: 10px;
+    font-weight: bold;
+    margin-left: 80px;
+    margin-top: 200px;
+    color: white;
+    z-index: 20;
+}
+
+.subtitle-left{
+    font-size: 20px;
+    font-family: "Microsoft YaHei";
+    letter-spacing: 10px;
+    font-weight: normal;
+    margin-left: 80px;
+    margin-top: 10px;
+    color: white;
+    z-index: 20;
+}
+
+.content-left{
+    padding-top: 50px;
+    margin-left: 80px;
+    margin-right: 15%;
+    font-size: 20px;
+    font-family: "STSong";
+    letter-spacing: 10px;
+    font-weight: lighter;
+    line-height: 24px;
+    width: 40%;
+    color: white;
+    margin-bottom: 20px;
+
+}
+.content-left-link{
+    font-size: 20px;
+    margin-left: 0;
+    padding: 0;
+    font-family: "STSong";
+    letter-spacing: 10px;
+    font-weight: lighter;
+    line-height: 24px;
+    text-decoration: underline;
+    color: white;
+
+}
+
+.content-left-link:hover{
+    padding-top: 50px;
+    font-size: 20px;
+    margin-left: 0;
+    font-family: "STSong";
+    letter-spacing: 10px;
+    font-weight: lighter;
+    text-decoration: underline;
+    color: azure;
+}
+
+.left-link-button{
+    
+    font-size: 15px;
+    padding-top: 20px;
+    margin-left: 80px;
+    padding: 5px;
+    font-family: "STSong";
+    letter-spacing: 5px;
+    font-weight: lighter;
+    line-height: 24px;
+    border-radius: 5px;
+    border: 2px solid white;
+    color: white;
+    justify-content:center;
+}
+
+.left-link-button:hover{
+    
+    font-size: 15px;
+    padding-top: 20px;
+    margin-left: 80px;
+    padding: 5px;
+    font-family: "STSong";
+    letter-spacing: 5px;
+    font-weight: lighter;
+    line-height: 24px;
+    border-radius: 5px;
+    border: 2px solid rgb(189, 189, 189);
+    color: rgb(189, 189, 189);
+    justify-content:center;
+}
