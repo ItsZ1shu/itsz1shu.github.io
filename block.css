@@ -1,0 +1,45 @@
+.block{
+    background-color: white;
+    text-align: center;
+    padding-top: 180px;
+    padding-bottom: 200px;
+    border-top: 2px dotted rgb(108, 108, 108);
+}
+
+.title{
+    font-size: 50px;
+    font-family: "Microsoft YaHei";
+    letter-spacing: 10px;
+    font-weight: bold;
+}
+
+.content{
+    padding-top: 50px;
+    margin-left: 15%;
+    margin-right: 15%;
+    font-size: 20px;
+    font-family: "STSong";
+    letter-spacing: 10px;
+    font-weight: lighter;
+    line-height: 24px;
+
+}
+.content-link{
+    font-size: 20px;
+    margin-left: 0;
+    padding: 0;
+    font-family: "STSong";
+    letter-spacing: 10px;
+    font-weight: lighter;
+    line-height: 24px;
+
+}
+
+.content-link:hover{
+    padding-top: 50px;
+    font-size: 20px;
+    margin-left: 0;
+    font-family: "STSong";
+    letter-spacing: 10px;
+    font-weight: lighter;
+}
