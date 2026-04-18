@@ -23,6 +23,20 @@ body {
     background-color: rgba(0, 0, 0, 0.342);
 }
 
+.banner_vat {
+    position: relative;
+    height: 100vh;
+    
+    /*进行视频裁剪*/
+    overflow: hidden;
+    display: block;
+    z-index: 1;
+    background-image: url("https://itsz1shu.github.io/img/VATimg.png");
+    background-size: cover;
+    background-blend-mode: multiply;
+    background-color: rgba(0, 0, 0, 0.342);
+}
+
 .banner .vidbg {
     position: absolute;
     left: 50%;
