@@ -197,13 +197,19 @@ body{overflow:hidden}
 .nav .nitem svg{width:20px;height:20px}
 .nav .nitem:hover{color:var(--ink);background:rgba(79,163,255,.08)}
 .nav .nitem.on{color:var(--sky);background:rgba(79,163,255,.14);box-shadow:inset 2px 0 0 var(--sky)}
-.nav .nitem.dl{margin-top:auto;color:var(--ok)}
+.nav .nitem.dl{color:var(--ok)}
 .nav .nitem.dl:hover{background:rgba(72,200,127,.14);color:#9ff0c0}
 .left .vview{display:flex;flex-direction:column;gap:14px}
 .left{width:470px;flex:none;height:100vh;overflow-y:auto;overflow-x:hidden;background:var(--bg);border-right:1px solid rgba(29,58,95,.6);padding:16px 18px;display:flex;flex-direction:column;gap:16px;scrollbar-width:thin}
 .right{flex:1;position:relative;min-width:0;background:#0c1626}
 .right #map{position:absolute;inset:0;background:#0c1626}
 #mapInfo{position:absolute;top:12px;left:12px;right:12px;z-index:1000;background:rgba(10,18,32,.92);border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:var(--ink);font-size:12.5px;line-height:1.8;box-shadow:0 6px 20px rgba(0,0,0,.4);max-height:180px;overflow:auto}
+#mapToggles{position:absolute;bottom:58px;left:12px;z-index:1000;background:rgba(10,18,32,.92);border:1px solid var(--line);border-radius:9px;padding:7px 11px;font-size:12px;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+#mapToggles label{display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--ink);user-select:none}
+#mapToggles input{accent-color:var(--sky);cursor:pointer}
+.seglabel{background:rgba(79,163,255,.94);color:#06121f;font-weight:700;font-size:11px;font-family:var(--mono);padding:1px 7px;border-radius:8px;border:1px solid rgba(79,163,255,.6);box-shadow:0 2px 6px rgba(0,0,0,.3);white-space:nowrap}
+.leaflet-tooltip.tip{background:rgba(10,18,32,.95);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:4px 9px;font-size:11.5px;line-height:1.5;box-shadow:0 3px 10px rgba(0,0,0,.45)}
+.leaflet-tooltip.tip::before{border:none}
 /* 底部 HUD 状态栏（EFB 风格，等宽数据） */
 #hudBar{position:absolute;left:0;right:0;bottom:0;z-index:1000;display:flex;align-items:stretch;background:rgba(8,14,26,.9);border-top:1px solid var(--line);backdrop-filter:blur(6px);font-family:var(--mono);font-size:12px;color:var(--ink);flex-wrap:nowrap;overflow-x:auto}
 #hudBar .hu{padding:8px 14px;border-right:1px solid rgba(29,58,95,.5);white-space:nowrap;display:flex;flex-direction:column;justify-content:center;gap:2px}
@@ -252,7 +258,7 @@ body{overflow:hidden}
   .nav .nitem{flex-direction:row;gap:5px;padding:8px 10px;width:auto;border-radius:7px}
   .nav .nitem svg{width:18px;height:18px}
   .nav .nitem span{font-size:12px}
-  .nav .nitem.dl{margin-top:0;margin-left:auto}
+  .nav .nitem.dl{margin-top:0}
   .left{width:100%;height:auto;max-height:42vh;border-right:0}
   .right{height:58vh}
   .right #map{position:static;height:100%}
@@ -292,7 +298,7 @@ body{overflow:hidden}
     <button class="nitem" data-v="custom" onclick="switchView('custom')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="13" r="4"/><path d="M12 3v3M12 23v-3M3 13h3M21 13h-3"/></svg><span>自定义</span></button>
     <button class="nitem" data-v="fixmap" onclick="switchView('fixmap')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5v14"/></svg><span>映射</span></button>
     <button class="nitem" data-v="settings" onclick="switchView('settings')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span>设置</span></button>
-    <a class="nitem dl" id="navDl" href="https://github.com/ItsZ1shu/itsz1shu.github.io/releases" target="_blank" rel="noopener" title="下载桌面版 exe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v10M7 9l5 5 5-5M4 21h16"/></svg><span>下载</span></a>
+    <a class="nitem dl" id="navDl" style="display:none" href="https://github.com/ItsZ1shu/itsz1shu.github.io/releases" target="_blank" rel="noopener" title="下载桌面版 exe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v10M7 9l5 5 5-5M4 21h16"/></svg><span>下载</span></a>
   </div>
 
   <div class="left">
@@ -418,6 +424,7 @@ body{overflow:hidden}
   <div class="right">
     <div id="map"></div>
     <div id="mapInfo">在左侧选择一条航路，查看完整航路与进离场机场航图</div>
+    <div id="mapToggles"><label><input type="checkbox" id="chkAllPts" onchange="toggleRoutePts()"><span>显示航路航点</span></label></div>
     <div id="hudBar">
       <div class="hu"><span class="hl">航路</span><span class="hv" id="hudRoute">—</span></div>
       <div class="hu"><span class="hl">类型</span><span class="hv a" id="hudType">—</span></div>
@@ -791,7 +798,7 @@ function wptsOf(r){
   });
   return out;
 }
-let MAP_OBJ=null, MAP_LAYER=null, MAP_INIT=false;
+let MAP_OBJ=null, MAP_LAYER=null, MAP_INIT=false, ROUTE_PTS_LAYER=null, ROUTE_SEGS=null, ROUTE_SKIP=[], SHOW_ALLPTS=false;
 const TILE_SOURCES=[
   ['https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png','© OpenStreetMap'],
   ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}','© Esri'],
@@ -829,31 +836,80 @@ function renderMap(r){
   if(MAP_LAYER) MAP_OBJ.removeLayer(MAP_LAYER);
   MAP_LAYER=L.layerGroup().addTo(MAP_OBJ);
   const seq=[];
-  if(MAP.airports[r[2]]) seq.push({code:r[2], ll:[MAP.airports[r[2]].lat,MAP.airports[r[2]].lon], isAir:true});
-  wptsOf(r).forEach(w=>{ if(MAP.points[w]) seq.push({code:w, ll:[MAP.points[w].lat,MAP.points[w].lon], isAir:false}); });
-  if(MAP.airports[r[4]]) seq.push({code:r[4], ll:[MAP.airports[r[4]].lat,MAP.airports[r[4]].lon], isAir:true});
+  const addSeq=(code,isAir)=>{
+    const ll= isAir? [MAP.airports[code].lat,MAP.airports[code].lon] : [MAP.points[code].lat,MAP.points[code].lon];
+    seq.push({code:code, ll:ll, isAir:isAir});
+  };
+  if(MAP.airports[r[2]]) addSeq(r[2],true); else if(MAP.points[r[2]]) addSeq(r[2],false);
+  wptsOf(r).forEach(w=>{ if(MAP.points[w]) addSeq(w,false); });
+  if(MAP.airports[r[4]]) addSeq(r[4],true); else if(MAP.points[r[4]]) addSeq(r[4],false);
   const segNames=[]; const segRe=/[A-Z]\d+/g; let m2;
   while((m2=segRe.exec(r[8]||''))){ const c=m2[0]; if(MAP.seg[c]) segNames.push(c); }
   const SAME=0.002;
   function findIdx(g,ll){ for(let i=0;i<g.length;i++){ if(Math.abs(g[i][0]-ll[0])<SAME && Math.abs(g[i][1]-ll[1])<SAME) return i; } return -1; }
-  function refine(a,b){ for(const c of segNames){ const g=MAP.seg[c]; if(!g) continue; const ia=findIdx(g,a), ib=findIdx(g,b); if(ia>=0 && ib>=0 && Math.abs(ia-ib)>1){ return ia<ib? g.slice(ia,ib+1) : g.slice(ib,ia+1).reverse(); } } return null; }
-  const poly=[];
-  seq.forEach((p,i)=>{ if(i===0){ poly.push(p.ll); } else { const prev=seq[i-1]; if(!prev.isAir && !p.isAir){ const mid=refine(prev.ll,p.ll); if(mid && mid.length>2){ mid.forEach(pt=>poly.push(pt)); } else poly.push(p.ll); } else poly.push(p.ll); } });
-  const clean=[]; poly.forEach(p=>{ if(!clean.length || clean[clean.length-1][0]!==p[0] || clean[clean.length-1][1]!==p[1]) clean.push(p); });
+  function refine(a,b){ for(const c of segNames){ const g=MAP.seg[c]; if(!g) continue; const ia=findIdx(g,a), ib=findIdx(g,b); if(ia>=0 && ib>=0 && Math.abs(ia-ib)>1){ return {label:c, pts: ia<ib? g.slice(ia,ib+1) : g.slice(ib,ia+1).reverse()}; } } return null; }
+  // 分段构建：每个航路段带航路号，便于在航路上标注"是哪一段"
+  const segs=[];
+  seq.forEach((p,i)=>{
+    if(i===0) return;
+    const prev=seq[i-1];
+    if(!prev.isAir && !p.isAir){
+      const m=refine(prev.ll,p.ll);
+      if(m && m.pts.length>2){ segs.push({pts:[prev.ll].concat(m.pts.slice(1)), label:m.label}); return; }
+    }
+    segs.push({pts:[prev.ll,p.ll], label:null});
+  });
   const bounds=[];
-  if(clean.length>=2) L.polyline(clean,{color:'#4fa3ff',weight:3,opacity:.9}).addTo(MAP_LAYER);
-  clean.forEach(p=>bounds.push(L.latLng(p)));
+  segs.forEach(s=>{
+    if(s.pts.length<2) return;
+    L.polyline(s.pts,{color:'#4fa3ff',weight:3,opacity:.9}).addTo(MAP_LAYER)
+      .bindTooltip(s.label? '<b>'+esc(s.label)+'</b> 航路段' : '<span style="opacity:.8">连接段</span>', {direction:'top', sticky:true, className:'tip'});
+    s.pts.forEach(p=>bounds.push(L.latLng(p)));
+  });
   const pin=(ll,code,name,type,col)=>{
     L.circleMarker(ll,{radius:5,color:col,fillColor:col,fillOpacity:.6,weight:1})
-      .bindPopup('<div style="font-weight:700">'+esc(code)+'</div><div>'+esc(type)+'</div><div>'+esc(name||'')+'</div><div>'+ll[0].toFixed(4)+', '+ll[1].toFixed(4)+'</div>')
+      .bindTooltip('<b>'+esc(code)+'</b> <span style="opacity:.7">'+esc(type)+'</span><br>'+esc(name||'')+'<br><span style="opacity:.6">'+ll[0].toFixed(4)+', '+ll[1].toFixed(4)+'</span>', {direction:'top', className:'tip'})
       .addTo(MAP_LAYER);
   };
   if(MAP.airports[r[2]]) pin([MAP.airports[r[2]].lat,MAP.airports[r[2]].lon], r[2], MAP.airports[r[2]].name, '起飞机场', '#4fa3ff');
   if(MAP.airports[r[4]]) pin([MAP.airports[r[4]].lat,MAP.airports[r[4]].lon], r[4], MAP.airports[r[4]].name, '到达机场', '#5fd9a0');
+  else if(MAP.points[r[4]]) pin([MAP.points[r[4]].lat,MAP.points[r[4]].lon], r[4], MAP.points[r[4]].name, '到达点', '#5fd9a0');
   wptsOf(r).forEach(w=>{ if(MAP.points[w]) pin([MAP.points[w].lat,MAP.points[w].lon], w, MAP.points[w].name, MAP.points[w].type, '#f2b23c'); });
+  ROUTE_SEGS=segs; ROUTE_SKIP=seq.map(s=>s.code);
+  if(SHOW_ALLPTS){ if(ROUTE_PTS_LAYER) MAP_OBJ.removeLayer(ROUTE_PTS_LAYER); buildRoutePts(); }
   if(bounds.length) MAP_OBJ.fitBounds(L.latLngBounds(bounds).pad(0.2));
   const mi=$('mapInfo');
-  if(mi) mi.innerHTML='<b>'+esc(r[0])+'</b> <span class="tag '+tagClass(r[1])+'">'+esc(r[1])+'</span><br>'+esc(r[8]||'')+'<br><span style="color:var(--faint)">'+seq.length+' 个公布点 · 完整航路（SEGMENT 细化）</span>';
+  if(mi) mi.innerHTML='<b>'+esc(r[0])+'</b> <span class="tag '+tagClass(r[1])+'">'+esc(r[1])+'</span><br>'+esc(r[8]||'')+'<br><span style="color:var(--faint)">'+seq.length+' 个公布点 · '+segs.length+' 段（SEGMENT 细化）</span>';
+}
+function routePtsOf(segs, skip){
+  const skipM={}; (skip||[]).forEach(c=>skipM[c]=1);
+  const out=[]; const SAME=0.004;
+  Object.keys(MAP.points).forEach(k=>{
+    if(skipM[k]) return;
+    const p=MAP.points[k];
+    for(const s of segs){ let hit=false;
+      for(const g of s.pts){ if(Math.abs(g[0]-p.lat)<SAME && Math.abs(g[1]-p.lon)<SAME){ hit=true; break; } }
+      if(hit){ out.push(k); break; }
+    }
+  });
+  return out;
+}
+function buildRoutePts(){
+  ROUTE_PTS_LAYER=L.layerGroup().addTo(MAP_OBJ);
+  const codes=routePtsOf(ROUTE_SEGS||[], ROUTE_SKIP||[]);
+  codes.forEach(k=>{
+    const p=MAP.points[k];
+    L.circleMarker([p.lat,p.lon],{radius:3,color:'#ffd66b',fillColor:'#ffd66b',fillOpacity:.6,weight:1})
+      .bindTooltip('<b>'+esc(k)+'</b> <span style="opacity:.7">'+esc(p.type||'')+'</span><br>'+esc(p.name||''), {direction:'top', className:'tip'})
+      .addTo(ROUTE_PTS_LAYER);
+  });
+}
+function toggleRoutePts(){
+  SHOW_ALLPTS=!SHOW_ALLPTS;
+  const chk=$('chkAllPts'); if(chk) chk.checked=SHOW_ALLPTS;
+  if(!MAP_OBJ) initMap();
+  if(SHOW_ALLPTS){ buildRoutePts(); }
+  else { if(ROUTE_PTS_LAYER) MAP_OBJ.removeLayer(ROUTE_PTS_LAYER); }
 }
 function toggleShowAll(){
   state.showAll=!state.showAll;
@@ -1133,12 +1189,22 @@ function refreshCurrent(){
 
 /* 初始化 */
 function init(){
-  // 网页版（无桌面桥）：只留"下载桌面版 exe"，去掉 PDF 目录（浏览器里选目录没用）
-  if(!(window.pywebview && window.pywebview.api)){
-    const nd=$('navDl'); if(nd) nd.style.display='';
-    ['pdfRoot','pdfSave','pdfBrowse'].forEach(id=>{ const el=$(id); if(el) el.style.display='none'; });
-    const pl=document.querySelector('.pdfbar .pl'); if(pl) pl.style.display='none';
-  }
+  // 区分网页版 / 桌面 exe：exe 的 pywebview 桥注入前保持默认（下载按钮隐藏、PDF 目录可用），检测到桥则交给 initPyWebview；
+  // 网页版在确认无桥后延迟显示"下载桌面版 exe"、隐藏 PDF 目录（浏览器里选目录没用）。避免桌面 exe 启动时误判成网页版导致按钮闪烁。
+  (function(){
+    var t0=Date.now();
+    function probe(){
+      if(window.pywebview && window.pywebview.api) return;   // 桌面 exe：保持默认，等待 pywebviewready
+      if(Date.now()-t0>1200){                                // 网页版：无桥
+        const nd=$('navDl'); if(nd) nd.style.display='';
+        ['pdfRoot','pdfSave','pdfBrowse'].forEach(id=>{ const el=$(id); if(el) el.style.display='none'; });
+        const pl=document.querySelector('.pdfbar .pl'); if(pl) pl.style.display='none';
+        return;
+      }
+      setTimeout(probe, 150);
+    }
+    probe();
+  })();
   loadCustom();
   renderCustomPanel();
   loadFixMaps();
