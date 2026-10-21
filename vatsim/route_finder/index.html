@@ -467,6 +467,60 @@ function compactRoute(r){
 const APPROACH_TYPES = ['仪表进近图_ILS','仪表进近图_VOR','仪表进近图_NDB','进近图_RNAV_RNP_RADAR_GPS_GNSS','目视进近图'];
 function isApproach(t){ return APPROACH_TYPES.indexOf(t)>=0; }
 
+/* 国际机场四字码 → 中文城市/目的地（用于把机场码翻译成 r[10]/r[11] 里的中文城市名来匹配航路） */
+const ICAO_ZH = {
+  /* 东亚 / 日韩台 */
+  'rjtt':'东京','rjaa':'东京','rjoo':'大阪','rjbb':'大阪','rksi':'首尔','rkss':'首尔','rkpk':'釜山','rkpc':'济州',
+  'rktn':'大邱','rkjj':'光州','rktu':'清州','rkps':'晋州','rknw':'原州','rkjb':'务安','roah':'冲绳','pgum':'关岛',
+  'pgsn':'塞班','rjgg':'名古屋','rjna':'名古屋','rjff':'福冈','rjfr':'北九州','rjob':'冈山','rjoa':'广岛','rjom':'松山',
+  'rjot':'高松','rjbe':'神户','rjoh':'米子','rjnk':'小松','rjnt':'富山','rjns':'静冈','rjss':'仙台','rjcc':'札幌','rjco':'札幌',
+  'rjch':'函馆','rjec':'旭川','rjcb':'带广','rjck':'钏路','rjfk':'鹿儿岛','rjft':'熊本','rjfu':'长崎','rjfs':'佐贺','rjsf':'福岛',
+  'rjsi':'花卷','rjsa':'青森','rjah':'茨城','rjbd':'南纪','rors':'下地岛',
+  /* 东南亚 */
+  'wiii':'雅加达','wadd':'巴厘岛','warr':'苏腊巴亚','wimm':'棉兰','wadl':'马塔兰','wars':'梭罗','wamm':'美娜多',
+  'wbgr':'米里','wbgg':'古晋','wbkk':'哥打基纳巴卢','wmkl':'兰卡威','wmkp':'槟城','wmkk':'吉隆坡','wmkj':'新山',
+  'wmsa':'梳邦','wmkm':'马六甲','wbkl':'纳闽','wbkw':'斗湖','wall':'巴里巴班',
+  'rpll':'马尼拉','rpvm':'宿务','rplc':'克拉克','rpmd':'达沃','rpvk':'卡利博','rpvp':'普林塞萨港','rpli':'拉瓦格','rplb':'苏比克湾','rpve':'长滩(菲律宾)',
+  'vtbs':'曼谷','vtbd':'曼谷','vtsp':'普吉','vtcc':'清迈','vtct':'清莱','vtss':'合艾','vtsm':'苏梅岛','vtsg':'甲米','vtsb':'素叻他尼','vtbu':'芭堤雅',
+  'vvdn':'岘港','vvcr':'芽庄','vvpq':'富国岛','vvnb':'河内','vvts':'胡志明市','vvci':'海防','vvpb':'顺化','vvdl':'大叻','vvpc':'归仁','vvct':'芹苴',
+  'vdpp':'金边','vdsr':'暹粒','vdsv':'西哈努克','vyyy':'仰光','vynt':'内比都','vymd':'曼德勒','vllb':'琅勃拉邦','vlvt':'万象','vlps':'巴色',
+  'wsss':'新加坡','wbsb':'斯里巴加湾','zmub':'乌兰巴托','zmcd':'乔巴山','zmkd':'科布多','zkpy':'平壤',
+  /* 南亚 / 中东 / 中亚 */
+  'vidp':'德里','vabb':'孟买','vobl':'班加罗尔','vomm':'金奈','vecc':'加尔各答','voha':'海德拉巴','vghs':'达卡','vgeg':'吉大港',
+  'vrmm':'马累','vcbi':'科伦坡','vcri':'汗班托塔','vnkt':'加德满都','opis':'伊斯兰堡','opkc':'卡拉奇','opla':'拉合尔','oakn':'坎大哈',
+  'oakb':'喀布尔','oaix':'巴格拉姆','oimm':'马什哈德','oiie':'德黑兰','ormm':'巴士拉','orbi':'巴格达','orer':'埃尔比勒','okbk':'科威特',
+  'obbi':'巴林','othh':'多哈','oejn':'吉达','oerf':'利雅得','oedf':'达曼','oema':'麦地那','omaa':'阿布扎比','omdb':'迪拜','omsj':'沙迦','llbg':'特拉维夫',
+  'utaa':'阿什哈巴德','utat':'土库曼巴希','utav':'土库曼纳巴特','uttt':'塔什干','utss':'撒马尔罕','utff':'费尔干纳','utsa':'那沃伊',
+  'utdd':'杜尚别','ucfm':'比什凯克','ucfo':'奥什','uaaa':'阿拉木图','uacc':'阿斯塔纳','uakk':'卡拉干达','uaii':'奇姆肯特','uatt':'阿克纠宾斯克',
+  /* 俄罗斯 / 中亚周边 */
+  'unbb':'巴尔瑙尔','ubbb':'巴库','ugtb':'第比利斯','udyz':'埃里温','eetn':'塔林','evra':'里加','eyka':'考纳斯','ukbb':'基辅',
+  'uuee':'莫斯科','uudd':'莫斯科','uuww':'莫斯科','ulli':'圣彼得堡','unnt':'新西伯利亚','uiii':'伊尔库茨克','uhww':'海参崴','uhhh':'哈巴罗夫斯克(伯力)',
+  'uiuu':'乌兰乌德','uiaa':'赤塔','ueee':'雅库茨克','unoo':'鄂木斯克','untt':'托姆斯克','unee':'克麦罗沃','unkl':'克拉斯诺亚尔斯克',
+  'urkk':'克拉斯诺达尔','urss':'索契','urrr':'罗斯托夫','uscc':'车里雅宾斯克','usss':'叶卡捷琳堡','uwuu':'乌法','uwww':'萨马拉','uwkd':'喀山',
+  'uwgg':'下诺夫哥罗德','uwlw':'乌里扬诺夫斯克','uspp':'皮尔姆','uhbb':'布拉戈维申斯克','uhss':'南萨哈林斯克','uibb':'布拉茨克','uhpp':'彼得曼巴甫洛夫斯',
+  'uubw':'茹科夫斯基','unaa':'阿巴坎',
+  /* 欧洲 */
+  'egll':'伦敦','egkk':'伦敦','egss':'伦敦','eghh':'伯恩茅斯','egbb':'伯明翰','eggd':'布里斯托','egcc':'曼彻斯特','egph':'爱丁堡','egpf':'格拉斯哥',
+  'lfpg':'巴黎','lfpo':'巴黎','lfmn':'尼斯','lfml':'马赛','lfbo':'图卢兹','eham':'阿姆斯特丹','ebbr':'布鲁塞尔','eddf':'法兰克福','eddm':'慕尼黑',
+  'eddb':'柏林','eddh':'汉堡','eddl':'杜塞尔多夫','eddp':'莱比锡','eddv':'汉诺威','lipz':'威尼斯','lirf':'罗马','liml':'米兰','limc':'米兰',
+  'lipo':'布雷西亚','libd':'巴里','lebl':'巴塞罗那','lemd':'马德里','lppt':'里斯本','lgav':'雅典','loww':'维也纳','lsgg':'日内瓦','lszh':'苏黎世',
+  'lkpr':'布拉格','lhbp':'布达佩斯','lrop':'布加勒斯特','epwa':'华沙','ekch':'哥本哈根','enge':'奥斯陆','essa':'斯德哥尔摩','efhk':'赫尔辛基',
+  'eidw':'都柏林','lybe':'贝尔格莱德','lezg':'萨拉戈萨','umms':'明斯克','ltfm':'伊斯坦布尔','ltba':'伊斯坦布尔','ltfj':'萨比哈格克琴','lfok':'瓦特里',
+  /* 美洲 */
+  'katl':'亚特兰大','kbos':'波士顿','kpit':'匹兹堡','kiad':'华盛顿','kdca':'华盛顿','kind':'印第安纳波利斯','kdtw':'底特律','kjfk':'纽约','kord':'芝加哥',
+  'kpdx':'波特兰','klax':'洛杉矶','ksfo':'旧金山','ksea':'西雅图','klas':'拉斯维加斯','ksjc':'圣何塞','kphl':'费城','kcvg':'辛辛那提',
+  'ksdf':'路易斯维尔','kmem':'孟菲斯','kiah':'休斯顿','kdfw':'达拉斯','kmia':'迈阿密','mmmx':'墨西哥城','cyyz':'多伦多','cyvr':'温哥华',
+  'cyul':'蒙特利尔','cyyc':'卡尔加里','cyeg':'埃德蒙顿','mmtj':'蒂华纳','phnl':'火奴鲁鲁','koak':'奥克兰(美国)','panc':'安克雷奇',
+  /* 非洲 / 澳洲 / 大洋洲 */
+  'fimp':'毛里求斯','htza':'桑给巴尔','hkjk':'内罗毕','haab':'亚的斯亚贝巴','hsss':'喀土穆','heca':'开罗','hegn':'赫尔加达','hllt':'的黎波里',
+  'gmmn':'卡萨布兰卡','daag':'阿尔及尔','faor':'约翰内斯堡','htda':'达累斯萨拉姆','fnal':'罗安达','nsfa':'阿皮亚','nvvv':'维拉港','nffn':'南迪',
+  'nzch':'基督城','nzaa':'奥克兰','yssy':'悉尼','ymml':'墨尔本','ybbn':'布里斯班','ypph':'珀斯','ybcs':'凯恩斯','ypad':'阿德莱德','ypdn':'达尔文',
+  'ybcg':'黄金海岸','aypy':'莫尔兹比港',
+  /* 补充 */
+  'rjfo':'大分','rjsn':'新泻','rkny':'江原道','widn':'丹戎槟榔','vvvd':'云屯','rpsp':'薄荷岛',
+  'utdl':'胡贾得','ooms':'马斯科特','ellx':'卢森堡','ekbi':'比伦德','eblg':'烈日','eddk':'科隆',
+  'ehbk':'马斯特里赫特','fgbt':'巴塔','hesn':'阿斯旺','mmsd':'络斯卡沃斯','fsia':'维多利亚港','ucfl':'塔姆奇'
+};
 function filtered(){
   const f=state.filters, out=[];
   const kw=f.kw.trim().toLowerCase(), s=f.start.trim().toLowerCase(), e=f.end.trim().toLowerCase(), fk=f.fkw.trim().toLowerCase();
@@ -474,8 +528,8 @@ function filtered(){
     const r=ROUTES[i];
     if(f.type && r[1]!==f.type) continue;
     if(kw && !RH[i].includes(kw)) continue;
-    if(s){ const hay=(r[2]+' '+r[3]+' '+r[10]).toLowerCase(); if(!hay.includes(s)) continue; }
-    if(e){ const hay=(r[4]+' '+r[5]+' '+r[11]).toLowerCase(); if(!hay.includes(e)) continue; }
+    if(s){ const hay=(r[2]+' '+r[3]+' '+r[10]).toLowerCase(); const zh=ICAO_ZH[s]; if(!hay.includes(s) && !(zh && hay.indexOf(zh)>=0)) continue; }
+    if(e){ const hay=(r[4]+' '+r[5]+' '+r[11]).toLowerCase(); const zh=ICAO_ZH[e]; if(!hay.includes(e) && !(zh && hay.indexOf(zh)>=0)) continue; }
     if(fk){ const hay=(r[8]+' '+r[9]+' '+r[12]+' '+r[13]).toLowerCase(); if(!hay.includes(fk)) continue; }
     out.push(i);
   }
@@ -526,6 +580,16 @@ function renderPager(){
 }
 
 /* 选择航路 -> 联动航图 */
+/* 用户搜索框若输入 4 位机场码，则用它作为实际抓取航图的机场（国际航线 r[4]/r[2] 常是航路点代号而非真实机场） */
+function effectiveAir(which){
+  const v=((which==='start'?state.filters.start:state.filters.end)||'').trim();
+  return /^[A-Za-z]{4}$/.test(v) ? v.toUpperCase() : '';
+}
+function depArrAir(r){
+  const dep=effectiveAir('start')||r[2], arr=effectiveAir('end')||r[4];
+  return { depCode:dep, depName:dep===r[2]?r[3]:'', depCity:dep===r[2]?r[10]:'',
+           arrCode:arr, arrName:arr===r[4]?r[5]:'', arrCity:arr===r[4]?r[11]:'' };
+}
 function select(idx){
   state.sel=idx;
   const r=ROUTES[idx];
@@ -533,9 +597,9 @@ function select(idx){
   $('chartPanel').style.display='block';
   document.querySelectorAll('.tbl tbody tr').forEach(tr=>tr.classList.toggle('sel', +tr.dataset.i===idx));
   renderDetail(r);
-  const fx=routeFixes(r[8]);
-  renderAirport('start', r[2], r[3], r[10], fx.dep, true);
-  renderAirport('end', r[4], r[5], r[11], fx.arr, false);
+  const fx=routeFixes(r[8]), aa=depArrAir(r);
+  renderAirport('start', aa.depCode, aa.depName, aa.depCity, fx.dep, true);
+  renderAirport('end', aa.arrCode, aa.arrName, aa.arrCity, fx.arr, false);
   document.querySelectorAll('.tgl').forEach(b=>b.textContent=state.showAll?'全部':'聚焦');
   const el=$('chartPanel'); el.scrollIntoView({behavior:'smooth',block:'start'});
   $('selTip').textContent='已选：'+r[0]+((fx.dep||fx.arr)?'（离场点 '+fx.dep+' / 进场点 '+fx.arr+'）':'');
@@ -543,9 +607,9 @@ function select(idx){
 function toggleShowAll(){
   state.showAll=!state.showAll;
   if(state.sel>=0){
-    const r=ROUTES[state.sel], fx=routeFixes(r[8]);
-    renderAirport('start',r[2],r[3],r[10],fx.dep,true);
-    renderAirport('end',r[4],r[5],r[11],fx.arr,false);
+    const r=ROUTES[state.sel], fx=routeFixes(r[8]), aa=depArrAir(r);
+    renderAirport('start',aa.depCode,aa.depName,aa.depCity,fx.dep,true);
+    renderAirport('end',aa.arrCode,aa.arrName,aa.arrCity,fx.arr,false);
   }
   document.querySelectorAll('.tgl').forEach(b=>b.textContent=state.showAll?'全部':'聚焦');
 }
@@ -812,7 +876,7 @@ function renderFixMapPanel(){
   list.querySelectorAll('.del').forEach(b=>b.onclick=()=>delFixMap(b.getAttribute('data-a'),b.getAttribute('data-k'),b.getAttribute('data-f')));
 }
 function refreshCurrent(){
-  if(state.sel>=0){ const r=ROUTES[state.sel], fx=routeFixes(r[8]); renderAirport('start',r[2],r[3],r[10],fx.dep,true); renderAirport('end',r[4],r[5],r[11],fx.arr,false); }
+  if(state.sel>=0){ const r=ROUTES[state.sel], fx=routeFixes(r[8]), aa=depArrAir(r); renderAirport('start',aa.depCode,aa.depName,aa.depCity,fx.dep,true); renderAirport('end',aa.arrCode,aa.arrName,aa.arrCity,fx.arr,false); }
 }
 
 /* 初始化 */
